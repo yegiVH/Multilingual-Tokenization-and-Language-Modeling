@@ -19,43 +19,42 @@ class CharTokenizer:
         for i, char in enumerate(self.itos):
             self.stoi[char] = i 
             
-        def encode(self, text): # for converting text to ids
-            ids = []
-            for char in text: # we loop through the characters
-                ids.append(self.stoi.get(char, UNK)) # we look up each character, if the char is there we return the index, if not we return UNK index (1)
-            return ids
+    def encode(self, text): # for converting text to ids
+        ids = []
+        for char in text: # we loop through the characters
+            ids.append(self.stoi.get(char, UNK)) # we look up each character, if the char is there we return the index, if not we return UNK index (1)
+        return ids
         
-        def pieces(self, text): # for human-readable output
-            tokens = []
-            for char in text:
-                if char in self.stoi:
-                    tokens.append(char) # each char that have index, meaning they are known, go to the token list
-                else:
-                    tokens.append("<unk>")
-                return tokens
+    def pieces(self, text): # for human-readable output
+        tokens = []
+        for char in text:
+            if char in self.stoi:
+                tokens.append(char) # each char that have index, meaning they are known, go to the token list
+            else:
+                tokens.append("<unk>")
+        return tokens
             
-        def vocab_size(self): # returning the vocab size
-            return len(self.itos)
+    def vocab_size(self): # returning the vocab size
+        return len(self.itos)
         
-        def save(self, path): # writing the vocabulary in a file
-            with open(path, "w", encoding="utf-8") as f: # open file for writing
-                json.dump(self.itos, f, ensure_ascii=False)
+    def save(self, path): # writing the vocabulary in a file
+        with open(path, "w", encoding="utf-8") as f: # open file for writing
+            json.dump(self.itos, f, ensure_ascii=False)
         
-        @staticmethod
-        def load(path): # for loading a vocab
-            with open(path, encoding="utf-8") as f:
-                vocab = json.load(f)
-            tok = CharTokenizer([]) # create an empty tokenizer
+    @staticmethod
+    def load(path): # for loading a vocab
+        with open(path, encoding="utf-8") as f:
+            vocab = json.load(f)
+        tok = CharTokenizer([]) # create an empty tokenizer
             
-            tok.itos = vocab
-            tok.stoi = {} # and the reverse dict
-            for i, char in enumerate(tok.itos):
-                tok.stoi[char] = i
-            return tok
+        tok.itos = vocab
+        tok.stoi = {} # and the reverse dict
+        for i, char in enumerate(tok.itos):
+            tok.stoi[char] = i
+        return tok
         
 if __name__ == "__main__":
     train = {}
-    
     # reading the training data
     for lang in LANGUAGES: # for each lang
         train[lang] = read_lines("train", lang)
@@ -76,7 +75,6 @@ if __name__ == "__main__":
     for lang in LANGUAGES:
         all_text = "".join(train[lang]) # all sentences into one huge string
         print(lang, "distinct train chars:", len(set(all_text)))
-        
         
     # and also unknown char rate
     for split in ["valid", "test"]:
