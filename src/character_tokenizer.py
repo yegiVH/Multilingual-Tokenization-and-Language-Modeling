@@ -1,6 +1,7 @@
 import json # save the vocabulary to a file
 from data import LANGUAGES, read_lines 
 
+# special tokens
 PAD = 0 # for making sentences the same length
 UNK = 1 # for unknown character
 BOS = 2 # beginning of sentence
@@ -12,6 +13,7 @@ class CharTokenizer:
         chars = set() # a set for storing unique chars
         for line in lines:
             chars.update(line) # adding all the chars from all the lines
+        
         # index to string   
         self.itos = ["<pad>", "<unk>", "<bos>", "<eos>"] + sorted(chars)
         
@@ -33,13 +35,21 @@ class CharTokenizer:
             else:
                 tokens.append("<unk>")
         return tokens
+    
+    def decode(self, ids): # converting token ids back to text
+        tokens = []
+        
+        for token_id in ids:
+            tokens.append(self.itos[token_id])
+        
+        return "".join(tokens)
             
     def vocab_size(self): # returning the vocab size
         return len(self.itos)
         
     def save(self, path): # writing the vocabulary in a file
         with open(path, "w", encoding="utf-8") as f: # open file for writing
-            json.dump(self.itos, f, ensure_ascii=False)
+            json.dump(self.itos, f, ensure_ascii=False, indent=2) # ensure_ascii=False to make it more readable 
         
     @staticmethod
     def load(path): # for loading a vocab
@@ -54,6 +64,7 @@ class CharTokenizer:
         return tok
         
 if __name__ == "__main__":
+    
     train = {}
     # reading the training data
     for lang in LANGUAGES: # for each lang
@@ -66,10 +77,12 @@ if __name__ == "__main__":
     # train tokenizer
     tok = CharTokenizer(all_sentences)
     
+    print("Character tokenizer")
+    print("--------------------")
+    print("vocab size:", tok.vocab_size())
+    
     # to save the vocabulary
     tok.save("char_vocab.json")
-    
-    print("vocab size:", tok.vocab_size())
     
     # count distinct characters per language
     for lang in LANGUAGES:
@@ -77,12 +90,27 @@ if __name__ == "__main__":
         print(lang, "distinct train chars:", len(set(all_text)))
         
     # and also unknown char rate
-    for split in ["valid", "test"]:
+    for split in ["valid", "test"]: # for validation and test set
         for lang in LANGUAGES:
             ids = []
             for sentence in read_lines(split, lang):
                 ids.extend(tok.encode(sentence))
             
-            unk_rate = ids.count(UNK) / len(ids)
+            unk_count = ids.count(UNK)
+            
+            if len(ids) > 0:
+                unk_rate = unk_count / len(ids)
+            else:
+                unk_rate = 0.0
             
             print(split, lang, f"unk rate in validation and test data = {unk_rate:.5f}")
+            
+    # checking that known validation sentences are represented without unk
+    print("\nExample character tokenizations:")
+    
+    for lang in LANGUAGES:
+        sentence = read_lines("valid", lang)[0]
+        
+        print(f"\n{lang}:")
+        print("Sentence:", sentence)
+        print("Tokens:", tok.pieces(sentence))

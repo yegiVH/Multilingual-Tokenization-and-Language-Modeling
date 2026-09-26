@@ -21,7 +21,7 @@ class BPETokenizer:
         self.sp = spm.SentencePieceProcessor( model_file = str(model_path)) # so this loads a trained sentencepiece model
         
     def encode(self, text): # text into token ids
-        return self.sp.encode(text) # returns a list of token ids
+        return self.sp.encode(text, out_type=int) # returns a list of token ids
     
     def pieces(self, text):  # gets text and returns token strings
         return self.sp.encode(text, out_type=str)
@@ -43,6 +43,8 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
     used_coverage = None
     for coverage in COVERAGES: # for all the coverages
         try:
+            print(f"\nTraining {model_prefix} with coverage {coverage}")
+            
             spm.SentencePieceTrainer.train( # we train the sentencepiece
                 input = corpus_path,
                 model_prefix = model_prefix, # output file names
@@ -51,8 +53,11 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
                 character_coverage = coverage,
                 byte_fallback = True, # it ensures every unicode character can be represented
                 normalization_rule_name = "identity", # so do not modify the text
+                
+                # to do not add or remove whitespace
                 add_dummy_prefix = False,
                 remove_extra_whitespaces = False,
+                
                 max_sentence_length = 16384, # which allows very long lines
                 pad_id = PAD,
                 unk_id = UNK,
@@ -67,7 +72,7 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
             break
         
         except RuntimeError as e: # if we faced runtime error
-            print(f"vocab_size {vocab_size} and coverage={coverage} failed, error: {e}")
+            print(f"vocab_size {vocab_size} and coverage {coverage} failed, error: {e}")
             
     if used_coverage is None: # and if all the coverages failed
         raise SystemExit(
@@ -75,16 +80,29 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
         )
         
     # saving what coverage was actually used, for the report
-    info = {"vocab_size": vocab_size, "character_coverage": used_coverage} # so saving the metadata
-    json.dump(info, open(f"{model_prefix}_info.json", "w")) # write it into a json file
-    print(f"{model_prefix}: trained with coverage= {used_coverage}")
+    info = {
+        "requested_vocab_size": vocab_size, 
+        "character_coverage": used_coverage,
+        "model_tupe" : "bpe",
+        "byte_fallback" : True,
+        } # so saving the metadata
     
+    with open(f"{model_prefix}_info.json", "w", encoding="utf-8") as f:
+        json.dump(info, f, indent=2)
     
+    print(f"{model_prefix} : trained with coverage {used_coverage}")
+
 
 if __name__ == "__main__":
+    
+    # training the two BPE tokenizers
     for V in [2000, 10000]:
         train_bpe(BALANCED_CORPUS, vocab_size=V, model_prefix = f"bpe{V}")
 
+
+    # testing the trained tokenizer
+    print("\n\nChecking trained BPE tokenizers..")
+    
     for V in [2000, 10000]:
         tok = BPETokenizer(f"bpe{V}.model")
         print(f"\nbpe{V} vocab size:", tok.vocab_size())
@@ -93,4 +111,10 @@ if __name__ == "__main__":
             ids = tok.encode(sentence)
             decoded = tok.decode(ids)
             assert decoded == sentence, f"NOT LOSSLESS for {lang}: {decoded!r} != {sentence!r}" # cuz the reconstructed sentence has to be exactly identical
-            print(f"  {lang}: {tok.pieces(sentence)}")
+            
+            print(f"\n{lang}:")
+            print("Sentence:", sentence)
+            print("Tokens:", tok.pieces(sentence))
+            print("Token IDs:", ids)
+            
+    print("\nAll BPE lossless checks passed")
