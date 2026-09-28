@@ -1,0 +1,6 @@
+{
+  "requested_vocab_size": 4000,
+  "character_coverage": 0.995,
+  "model_tupe": "bpe",
+  "byte_fallback": true
+}

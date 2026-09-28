@@ -9,7 +9,7 @@ BOS = 2
 EOS = 3
 
 # for SentencePiece training for the parameter character_coverage
-COVERAGES = [0.9995, 0.999, 0.998, 0.995, 0.99, 0.985, 0.98] # cuz sentencepiece needs character_coverage more than 0.98 and won't get lower
+COVERAGES = [0.9995, 0.999, 0.998, 0.995, 0.99, 0.985, 0.98, 0.96, 0.94, 0.90, 0.85]
 # so if the vocab is too small to hold all the chinese characters then I try lower coverage until training is successful
 # higher coverage keeps more rare characters
 
@@ -85,7 +85,7 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
         "character_coverage": used_coverage,
         "model_tupe" : "bpe",
         "byte_fallback" : True,
-        } # so saving the metadata
+        } 
     
     with open(f"{model_prefix}_info.json", "w", encoding="utf-8") as f:
         json.dump(info, f, indent=2)
@@ -96,14 +96,14 @@ def train_bpe(corpus_path, vocab_size, model_prefix):
 if __name__ == "__main__":
     
     # training the two BPE tokenizers
-    for V in [2000, 10000]:
+    for V in [4000, 10000]:
         train_bpe(BALANCED_CORPUS, vocab_size=V, model_prefix = f"bpe{V}")
 
 
     # testing the trained tokenizer
     print("\n\nChecking trained BPE tokenizers..")
     
-    for V in [2000, 10000]:
+    for V in [4000, 10000]:
         tok = BPETokenizer(f"bpe{V}.model")
         print(f"\nbpe{V} vocab size:", tok.vocab_size())
         for lang in LANGUAGES:

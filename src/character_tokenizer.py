@@ -62,6 +62,8 @@ class CharTokenizer:
         for i, char in enumerate(tok.itos):
             tok.stoi[char] = i
         return tok
+  
+  
         
 if __name__ == "__main__":
     

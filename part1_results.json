@@ -1,0 +1,62 @@
+{
+  "Character": {
+    "en": {
+      "vocab_size": 9446,
+      "total_tokens": 368269,
+      "average_tokens_per_sentence": 81.11651982378855,
+      "characters_per_token": 1.0
+    },
+    "tr": {
+      "vocab_size": 9446,
+      "total_tokens": 368383,
+      "average_tokens_per_sentence": 98.62998661311914,
+      "characters_per_token": 1.0
+    },
+    "zh": {
+      "vocab_size": 9446,
+      "total_tokens": 368266,
+      "average_tokens_per_sentence": 38.545740004186726,
+      "characters_per_token": 1.0
+    }
+  },
+  "BPE-4000": {
+    "en": {
+      "vocab_size": 4000,
+      "total_tokens": 182648,
+      "average_tokens_per_sentence": 40.23083700440529,
+      "characters_per_token": 2.016277210809864
+    },
+    "tr": {
+      "vocab_size": 4000,
+      "total_tokens": 191276,
+      "average_tokens_per_sentence": 51.21178045515395,
+      "characters_per_token": 1.9259237959806772
+    },
+    "zh": {
+      "vocab_size": 4000,
+      "total_tokens": 355153,
+      "average_tokens_per_sentence": 37.17322587397948,
+      "characters_per_token": 1.036922115257368
+    }
+  },
+  "BPE-10000": {
+    "en": {
+      "vocab_size": 10000,
+      "total_tokens": 129593,
+      "average_tokens_per_sentence": 28.544713656387664,
+      "characters_per_token": 2.8417352789116697
+    },
+    "tr": {
+      "vocab_size": 10000,
+      "total_tokens": 129636,
+      "average_tokens_per_sentence": 34.70843373493976,
+      "characters_per_token": 2.8416720664013084
+    },
+    "zh": {
+      "vocab_size": 10000,
+      "total_tokens": 306390,
+      "average_tokens_per_sentence": 32.069290349591796,
+      "characters_per_token": 1.2019517608277033
+    }
+  }
+}
